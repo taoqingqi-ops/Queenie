@@ -1,0 +1,505 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2487.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="zh-CN"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;德法双城记：冬日旅行助手&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&amp;display=swap" rel="stylesheet"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Noto Sans SC', sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #f8fafc; /* Slate 50 */</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #334155; /* Slate 700 */</p>
+<p class="p1"><span class="Apple-converted-space">            </span>-webkit-tap-highlight-color: transparent;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Chart Container Styling - Critical for Responsiveness */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.chart-container {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-width: 600px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-left: auto;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-right: auto;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 300px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-height: 350px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@media (min-width: 768px) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.chart-container {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>height: 350px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Utility Classes */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.glass-card {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(255, 255, 255, 0.95);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid rgba(226, 232, 240, 0.8);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 1rem;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.timeline-connector {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>left: 24px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>top: 24px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>bottom: -24px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 2px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #cbd5e1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>z-index: 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.last-item .timeline-connector {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.nav-btn.active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #2563eb; /* Blue 600 */</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #eff6ff; /* Blue 50 */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Custom Scrollbar for horizontal tabs */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.hide-scroll::-webkit-scrollbar {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.hide-scroll {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>-ms-overflow-style: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>scrollbar-width: none;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Chosen Palette: Slate (Neutrals) + Blue (Primary/Transit) + Amber (Highlights) + Rose (Alerts) --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Application Structure Plan:</p>
+<p class="p1"><span class="Apple-converted-space">         </span>1. Dashboard (Overview): Quick stats, daylight visualization (critical for winter), and packing/pre-trip checklist.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>2. Itinerary (Timeline): A day-by-day vertical timeline. Each event card highlights time, activity, and specific notes (e.g., student discounts, specific routes).</p>
+<p class="p1"><span class="Apple-converted-space">         </span>3. Reservations (Manager): A checklist of all booked/to-be-booked items identified in the report.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>4. Explore (Collection): A filterable grid of Photo Spots and Food recommendations.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>Rationale: This structure separates the linear "what do I do next" (Itinerary) from the "what do I need to prepare" (Reservations) and "where are the cool spots" (Explore), preventing information overload.</p>
+<p class="p1"><span class="Apple-converted-space">    </span>--&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Visualization &amp; Content Choices:</p>
+<p class="p1"><span class="Apple-converted-space">         </span>1. Doughnut Chart: Itinerary Balance (Sightseeing vs Food vs Transit) to show the trip's pace.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>2. Bar Chart: Daylight vs Activity Hours. Since it's Jan, showing short daylight (8:30-16:30) reinforces why morning starts are key.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>3. Interactive Checklists: For packing and reservations.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>4. Tabbed Navigation: For switching days easily.</p>
+<p class="p1"><span class="Apple-converted-space">         </span>CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.</p>
+<p class="p1"><span class="Apple-converted-space">    </span>--&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body class="pb-24 md:pb-0 md:pt-20"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Desktop/Top Navigation (Hidden on Mobile) --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="hidden md:flex fixed top-0 w-full bg-white/90 backdrop-blur border-b border-gray-200 z-50 justify-center gap-8 p-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="nav('overview')" class="nav-btn px-6 py-2 rounded-full font-bold transition-all hover:bg-gray-100"&gt;📊 概览&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="nav('itinerary')" class="nav-btn px-6 py-2 rounded-full font-bold transition-all hover:bg-gray-100"&gt;🗓️ 行程&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="nav('reservations')" class="nav-btn px-6 py-2 rounded-full font-bold transition-all hover:bg-gray-100"&gt;🎟️ 预约&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="nav('explore')" class="nav-btn px-6 py-2 rounded-full font-bold transition-all hover:bg-gray-100"&gt;📷 吃喝/出片&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/nav&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Mobile/Bottom Navigation --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 z-50 flex justify-around p-3 safe-area-pb"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="nav('overview')" class="nav-btn flex flex-col items-center gap-1 w-full text-gray-500 rounded-lg p-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="text-xl"&gt;📊&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="text-[10px] font-medium"&gt;概览&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="nav('itinerary')" class="nav-btn flex flex-col items-center gap-1 w-full text-gray-500 rounded-lg p-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="text-xl"&gt;🗓️&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="text-[10px] font-medium"&gt;行程&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="nav('reservations')" class="nav-btn flex flex-col items-center gap-1 w-full text-gray-500 rounded-lg p-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="text-xl"&gt;🎟️&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="text-[10px] font-medium"&gt;预约&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="nav('explore')" class="nav-btn flex flex-col items-center gap-1 w-full text-gray-500 rounded-lg p-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="text-xl"&gt;📷&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="text-[10px] font-medium"&gt;发现&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/nav&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Main Content --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;main class="max-w-3xl mx-auto p-4 md:p-6 space-y-6"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- SECTION: OVERVIEW --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;section id="overview" class="view-section animate-fade"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;header class="mb-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h1 class="text-2xl font-bold text-slate-800"&gt;🇪🇺 德法双城记&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="text-slate-500 text-sm mt-1"&gt;1月7日 - 1月12日 | 柏林 · 德累斯顿 · 巴黎&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Alerts --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="glass-card p-4 mb-6 border-l-4 border-amber-400 bg-amber-50/50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h3 class="font-bold text-amber-800 mb-2 flex items-center"&gt;⚠️ 行前高亮提醒&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;ul class="text-sm text-amber-900 space-y-1 list-disc list-inside"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;&lt;b&gt;保暖：&lt;/b&gt;帽子、围巾、手套是户外行走必备。&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;&lt;b&gt;周日预警：&lt;/b&gt;1月11日(周日) 巴黎多数商店闭门，只有玛黑区营业。&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;&lt;b&gt;学生福利：&lt;/b&gt;务必携带 &lt;b&gt;学生证(ISIC) + 护照&lt;/b&gt;。德国馆多有优惠，巴黎欧盟生全免/非欧盟生部分有票。&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Visualization Grid --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;!-- Activity Balance Chart --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="glass-card p-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h3 class="text-sm font-bold text-slate-500 mb-2"&gt;行程节奏分布&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="chart-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;canvas id="activityChart"&gt;&lt;/canvas&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-xs text-center text-slate-400 mt-2"&gt;基于景点数量统计&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;!-- Daylight Chart --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="glass-card p-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h3 class="text-sm font-bold text-slate-500 mb-2"&gt;1月冬日白昼警示&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="chart-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;canvas id="daylightChart"&gt;&lt;/canvas&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-xs text-center text-slate-400 mt-2"&gt;16:30即日落，户外拍照请赶早！&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Packing Checklist --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="glass-card p-5"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h3 class="font-bold text-slate-800 mb-4"&gt;🧳 必备清单&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="packing-list"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- JS populated --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- SECTION: ITINERARY --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;section id="itinerary" class="view-section hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;header class="mb-4 sticky top-0 md:top-20 bg-[#f8fafc] pt-2 pb-2 z-40"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="flex overflow-x-auto gap-2 hide-scroll pb-2" id="day-tabs"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- JS populated tabs --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="timeline-container" class="space-y-0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;!-- JS populated timeline --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- SECTION: RESERVATIONS --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;section id="reservations" class="view-section hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="glass-card p-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span class="bg-rose-100 text-rose-600 p-2 rounded-lg mr-3 text-lg"&gt;🎟️&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>预约管理中心</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="text-sm text-slate-500 mb-6"&gt;以下项目强烈建议或必须提前预约。点击勾选以标记为“已搞定”。&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="space-y-3" id="reservation-list"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;!-- JS populated --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- SECTION: EXPLORE (Photo &amp; Food) --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;section id="explore" class="view-section hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="flex gap-2 mb-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button onclick="filterExplore('all')" class="explore-filter active px-4 py-1.5 rounded-full text-sm font-medium bg-slate-200 text-slate-600"&gt;全部&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button onclick="filterExplore('food')" class="explore-filter px-4 py-1.5 rounded-full text-sm font-medium bg-white border border-slate-200 text-slate-600"&gt;🍽️ 美食&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button onclick="filterExplore('photo')" class="explore-filter px-4 py-1.5 rounded-full text-sm font-medium bg-white border border-slate-200 text-slate-600"&gt;📷 出片&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grid grid-cols-1 gap-4" id="explore-grid"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;!-- JS populated --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- DATA ---</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const packingItems = [</p>
+<p class="p1"><span class="Apple-converted-space">            </span>"学生证 (ISIC) + 护照", "转换插头 (欧标)", "充电宝", "围巾/手套/帽子",<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>"牙刷拖鞋 (欧洲酒店常不提供)", "App: DB Navigator", "App: Citymapper", "App: Uber Eats"</p>
+<p class="p1"><span class="Apple-converted-space">        </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const days = [</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'd1', date: '1月7日', w: '周三', city: '柏林', title: '抵达与购物' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'd2', date: '1月8日', w: '周四', city: '德累斯顿', title: '一日游(南进北出)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'd3', date: '1月9日', w: '周五', city: '柏林/巴黎', title: '深度游 &amp; 飞行' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'd4', date: '1月10日', w: '周六', city: '巴黎', title: '铁塔 &amp; 香街' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'd5', date: '1月11日', w: '周日', city: '巴黎', title: '卢浮宫 &amp; 蜗牛' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'd6', date: '1月12日', w: '周一', city: '巴黎', title: '左岸 &amp; 返程' }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const itineraryData = {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>'d1': [</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '13:55', title: '抵达柏林 (BER)', type: 'transit', desc: '机场快线 FEX 至 Zoologischer Garten' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '15:30', title: '入住 Hotel NH Berlin', type: 'hotel', desc: '位于 Kurfürstendamm，位置极佳' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '16:00', title: 'Pop Mart &amp; KaDeWe', type: 'shop', desc: 'Tauentzienstraße 13，步行可达' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '18:30', title: '晚餐: Savignyplatz', type: 'food', desc: 'Dickes Wirtshaus (德餐) 或 Kuchi (日料)' }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>'d2': [</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '08:00', title: '火车前往 Dresden Hbf', type: 'transit', desc: '建议买到南站(Hbf)下车，开启一路向北路线', badge: '建议预订' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '10:30', title: '绿穹珍宝馆 &amp; 王宫', type: 'sight', desc: '🎓学生优惠。先看地下历史馆(需预约)，再看二楼新馆。记得登观景台。', badge: '必看' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '13:30', title: '茨温格宫 &amp; 巧克力冰棍', type: 'food', desc: 'Camondas 巧克力冰棍必吃！' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '14:30', title: '王子行列 &amp; 圣母教堂', type: 'sight', desc: '这里买冰箱贴便宜' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '15:00', title: '午餐: 猪肘', type: 'food', desc: 'Augustiner (教堂门口)，皮脆肉嫩' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '16:30', title: '布吕尔平台 &amp; 过河', type: 'sight', desc: '过 Augustusbrücke 桥，去新城' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '19:30', title: '北站 (Neustadt) 返程', type: 'transit', desc: '不走回头路，直接从北站回柏林' }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>'d3': [</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '09:00', title: '退房 &amp; 存行李', type: 'transit', desc: '建议存在 Hbf 车站或 Mall of Berlin' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '10:00', title: '哈克庭院 &amp; 博物馆岛', type: 'sight', desc: 'James Simon Gallery 拍极简大片。🎓学生优惠' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '12:30', title: 'HARIBO 旗舰店 &amp; 午餐', type: 'shop', desc: 'Mall of Berlin 解决午餐和购物' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '14:30', title: '奥伯鲍姆桥', type: 'sight', desc: '拍黄色地铁穿过红砖桥' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '17:00', title: '前往机场 (BER)', type: 'transit', desc: '预留充足安检时间' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '20:20', title: '飞往巴黎 (ORY)', type: 'transit', desc: '抵达奥利机场。打车去15区一口价 €36 (Taxi Parisien)' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '23:30', title: '外卖: Napoli Gang', type: 'food', desc: 'Uber Eats 点 Pink Mamma 同款意面' }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>'d4': [</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '10:30', title: '睡懒觉 &amp; 出门', type: 'chill', desc: '昨晚太晚，今早恢复体力' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '11:30', title: '午餐: 法式小馆', type: 'food', desc: 'Café Constant 或 Les Cocottes (铁塔附近)' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '13:00', title: '埃菲尔铁塔', type: 'sight', desc: 'Trocadéro 拍全景 -&gt; Camoëns 拍隐秘机位。🎓青年票优惠' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '15:30', title: '香榭丽舍 &amp; 凯旋门', type: 'shop', desc: '推荐逛 Galeries Lafayette 新店 &amp; 86Champs' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '18:00', title: '塞纳河游船', type: 'sight', desc: '日落/夜景时段最佳' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '20:30', title: '晚餐: 牛排薯条', type: 'food', desc: 'Le Relais de l\'Entrecôte (需排队)' }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>'d5': [</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '09:30', title: '卢浮宫', type: 'sight', desc: '🎓仅欧盟&lt;26岁免。走地下Carrousel入口避排队', badge: '必约' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '12:30', title: '午餐: 百年蜗牛老店', type: 'food', desc: 'L\'Escargot Montorgueil，金字招牌' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '15:00', title: '蒙马特高地', type: 'sight', desc: '避开人群：Villa Léandre &amp; Maison Rose' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '19:00', title: '晚餐: Pink Mamma', type: 'food', desc: '网红意餐，必须提前抢号预约', badge: '难订' }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>],</p>
+<p class="p1"><span class="Apple-converted-space">            </span>'d6': [</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '10:00', title: 'Le Bon Marché', type: 'shop', desc: '左岸最顶级百货，人少好逛。必去食品馆买伴手礼' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '13:00', title: '午餐: Fallafel', type: 'food', desc: 'L\'As du Fallafel (玛黑区) 今日营业' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '14:00', title: '花神咖啡 &amp; 卢森堡公园', type: 'chill', desc: '感受左岸氛围' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '16:00', title: 'Citypharma 药妆', type: 'shop', desc: '最后补货 (周一营业)' },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ time: '17:30', title: '前往机场 (CDG)', type: 'transit', desc: 'RER B线前往，预留时间' }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>]</p>
+<p class="p1"><span class="Apple-converted-space">        </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const reservations = [</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ title: '柏林-德累斯顿 火车', date: '1月8日', icon: '🚄' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ title: '绿穹珍宝馆 (历史馆)', date: '1月8日 11:00', icon: '💎', urgent: true },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ title: '柏林-巴黎 机票', date: '1月9日 20:20', icon: '✈️' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ title: '埃菲尔铁塔登顶', date: '1月10日', icon: '🗼' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ title: '卢浮宫门票', date: '1月11日 09:30', icon: '🖼️', urgent: true },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ title: 'Pink Mamma 晚餐', date: '1月11日 19:00', icon: '🍝', urgent: true }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const exploreItems = [</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ type: 'food', name: 'L\'Escargot Montorgueil', city: '巴黎', desc: '百年金蜗牛，必吃经典', tags: ['蜗牛', '老店'] },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ type: 'food', name: 'Napoli Gang', city: '巴黎', desc: 'Pink Mamma同款外卖', tags: ['外卖', 'UberEats'] },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ type: 'food', name: 'Camondas', city: '德累斯顿', desc: '王宫门口巧克力冰棍', tags: ['甜点'] },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ type: 'photo', name: 'James Simon Gallery', city: '柏林', desc: '白色极简柱廊，光影人像', tags: ['建筑', '博物馆岛'] },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ type: 'photo', name: 'Oberbaumbrücke', city: '柏林', desc: '红砖桥+黄色地铁同框', tags: ['经典'] },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ type: 'photo', name: 'Avenue de Camoëns', city: '巴黎', desc: '铁塔隐秘机位，无人且美', tags: ['小众'] },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ type: 'photo', name: 'Galeries Lafayette', city: '巴黎', desc: '香街新店，光影隧道', tags: ['时尚'] }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- APP LOGIC ---</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let activeDay = 'd1';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function init() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderPackingList();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderDayTabs();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderTimeline(activeDay);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderReservations();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderExplore('all');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>initCharts();</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Set default active tab style</p>
+<p class="p1"><span class="Apple-converted-space">            </span>nav('overview');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function nav(sectionId) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Toggle visibility</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.view-section').forEach(el =&gt; el.classList.add('hidden'));</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById(sectionId).classList.remove('hidden');</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Toggle button styles</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.nav-btn').forEach(el =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>el.classList.remove('text-blue-600', 'bg-blue-50');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if(el.getAttribute('onclick').includes(sectionId)) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>el.classList.add('text-blue-600', 'bg-blue-50'); // Mobile &amp; Desktop active state logic roughly</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>window.scrollTo(0,0);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function renderPackingList() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const list = document.getElementById('packing-list');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>list.innerHTML = packingItems.map(item =&gt; `</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="flex items-center space-x-2 text-sm text-slate-700"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;input type="checkbox" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span&gt;${item}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>`).join('');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function renderDayTabs() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const container = document.getElementById('day-tabs');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>container.innerHTML = days.map(d =&gt; `</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button onclick="switchDay('${d.id}')"<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>class="day-tab px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all border ${activeDay === d.id ? 'bg-slate-800 text-white border-slate-800 shadow-md' : 'bg-white text-slate-600 border-slate-200 hover:bg-gray-50'}"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>${d.date} ${d.w}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>`).join('');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function switchDay(id) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>activeDay = id;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderDayTabs();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderTimeline(id);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function renderTimeline(id) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const container = document.getElementById('timeline-container');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const items = itineraryData[id];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const dayInfo = days.find(d =&gt; d.id === id);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let html = `</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="px-2 mb-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h2 class="text-xl font-bold text-slate-800"&gt;${dayInfo.city} &lt;span class="text-base font-normal text-slate-500"&gt;| ${dayInfo.title}&lt;/span&gt;&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>html += items.map((item, index) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const isLast = index === items.length - 1;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let icon = '📍';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let color = 'bg-slate-100 text-slate-600';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if(item.type === 'food') { icon = '🍴'; color = 'bg-orange-100 text-orange-600'; }</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if(item.type === 'transit') { icon = '🚄'; color = 'bg-blue-100 text-blue-600'; }</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if(item.type === 'shop') { icon = '🛍️'; color = 'bg-pink-100 text-pink-600'; }</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if(item.type === 'chill') { icon = '☕'; color = 'bg-teal-100 text-teal-600'; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>return `</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="relative pl-20 py-2 ${isLast ? 'last-item' : ''}"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="absolute left-6 top-3 font-mono text-sm font-bold text-slate-400 w-12 text-right"&gt;${item.time}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="timeline-connector"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="absolute left-[24px] top-[24px] -ml-[12px] w-6 h-6 rounded-full border-2 border-white shadow-sm flex items-center justify-center text-xs z-10 ${color}"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>${icon}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="glass-card p-4 ml-4 hover:shadow-md transition-shadow"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex justify-between items-start"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;h3 class="font-bold text-slate-800 text-lg"&gt;${item.title}&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>${item.badge ? `&lt;span class="bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full font-bold whitespace-nowrap"&gt;${item.badge}&lt;/span&gt;` : ''}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-sm text-slate-600 mt-1"&gt;${item.desc}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}).join('');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>container.innerHTML = html;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function renderReservations() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const list = document.getElementById('reservation-list');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>list.innerHTML = reservations.map((res, i) =&gt; `</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="flex items-start p-3 bg-white border border-gray-100 rounded-xl shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;input type="checkbox" class="mt-1 w-5 h-5 rounded text-blue-600 border-gray-300 focus:ring-blue-500"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="ml-3 flex-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex justify-between"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="font-bold text-slate-800"&gt;${res.icon} ${res.title}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>${res.urgent ? '&lt;span class="text-xs bg-rose-100 text-rose-600 px-2 py-0.5 rounded font-bold"&gt;必抢&lt;/span&gt;' : ''}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-xs text-slate-500 mt-0.5"&gt;${res.date}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>`).join('');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function filterExplore(type) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.explore-filter').forEach(el =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>el.classList.remove('active', 'bg-slate-200');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>el.classList.add('bg-white', 'border', 'border-slate-200');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>event.target.classList.add('active', 'bg-slate-200');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>event.target.classList.remove('bg-white', 'border');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderExplore(type);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function renderExplore(filter) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const grid = document.getElementById('explore-grid');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const items = exploreItems.filter(i =&gt; filter === 'all' || i.type === filter);</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>grid.innerHTML = items.map(item =&gt; `</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="glass-card p-4 flex gap-4 items-start"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="text-2xl"&gt;${item.type === 'food' ? '🍽️' : '📷'}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h4 class="font-bold text-slate-800"&gt;${item.name}&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex gap-2 my-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded"&gt;${item.city}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>${item.tags.map(t =&gt; `&lt;span class="text-[10px] bg-blue-50 text-blue-500 px-1.5 py-0.5 rounded"&gt;#${t}&lt;/span&gt;`).join('')}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-sm text-slate-600"&gt;${item.desc}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>`).join('');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- CHARTS ---</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function initCharts() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// 1. Activity Balance Doughnut</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const ctx1 = document.getElementById('activityChart').getContext('2d');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>new Chart(ctx1, {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>type: 'doughnut',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>data: {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>labels: ['观光', '美食', '交通', '购物'],</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>datasets: [{</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>data: [45, 25, 20, 10], // Approx percentages</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>backgroundColor: ['#6366f1', '#f97316', '#3b82f6', '#ec4899'],</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>borderWidth: 0,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>hoverOffset: 4</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}]</p>
+<p class="p1"><span class="Apple-converted-space">                </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                </span>options: {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>responsive: true,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>maintainAspectRatio: false,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>plugins: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } }</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// 2. Daylight Bar Chart</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const ctx2 = document.getElementById('daylightChart').getContext('2d');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>new Chart(ctx2, {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>type: 'bar',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>data: {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>labels: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'],</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>datasets: [{</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>label: '1月白昼可见度',</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>data: [20, 100, 100, 100, 40, 0, 0],<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>backgroundColor: (ctx) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>const val = ctx.raw;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>return val &gt; 50 ? '#f59e0b' : '#1e293b'; // Amber for day, Slate for night</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>borderRadius: 4</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}]</p>
+<p class="p1"><span class="Apple-converted-space">                </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                </span>options: {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>responsive: true,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>maintainAspectRatio: false,</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>scales: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>y: { display: false, max: 120 },</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>x: { grid: { display: false } }</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>},</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>plugins: {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>legend: { display: false }</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Start</p>
+<p class="p1"><span class="Apple-converted-space">        </span>init();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
