@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>德法双城记：深度旅行助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f1f5f9; /* Slate 100 */
+            color: #334155;
+            padding-bottom: 90px; /* Space for bottom nav */
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            border: 1px solid #e2e8f0;
+        }
+        .card-header {
+            padding: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-body {
+            background-color: #f8fafc;
+            padding: 0 16px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease;
+            border-top: 1px solid transparent;
+        }
+        .card.expanded .card-body {
+            padding: 16px;
+            border-top-color: #e2e8f0;
+            max-height: 1000px;
+        }
+        .card.expanded .arrow {
+            transform: rotate(180deg);
+        }
+        .timeline-time {
+            font-family: monospace;
+            font-weight: 700;
+            color: #64748b;
+            width: 50px;
+            flex-shrink: 0;
+        }
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 50;
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        .nav-item.active {
+            color: #2563eb;
+        }
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+        .badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+            font-weight: bold;
+        }
+        .badge-student { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+        .badge-urgent { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .badge-rec { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+        
+        .detail-block { margin-bottom: 12px; }
+        .detail-label { font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 4px; display: block; }
+        .detail-text { font-size: 14px; line-height: 1.6; color: #334155; }
+        
+        /* Day Tabs */
+        .day-tabs {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 12px 16px;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .day-tab {
+            white-space: nowrap;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid transparent;
+        }
+        .day-tab.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+        }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 顶部 -->
+    <div class="bg-white p-6 pb-4 border-b border-slate-100">
+        <h1 class="text-2xl font-bold text-slate-800">🇩🇪🇫🇷 深度旅行攻略</h1>
+        <p class="text-sm text-slate-500 mt-1">1月7日 - 1月12日 | 柏林 · 德累斯顿 · 巴黎</p>
+    </div>
+
+    <!-- 页面内容 -->
+    <main id="main-container">
+        <!-- JS 动态渲染 -->
+    </main>
+
+    <!-- 底部导航 -->
+    <nav class="nav-bar">
+        <button onclick="renderView('overview')" class="nav-item active" id="nav-overview">
+            <span class="nav-icon">📊</span>
+            <span>概览</span>
+        </button>
+        <button onclick="renderView('itinerary')" class="nav-item" id="nav-itinerary">
+            <span class="nav-icon">🗓️</span>
+            <span>行程</span>
+        </button>
+        <button onclick="renderView('reservations')" class="nav-item" id="nav-reservations">
+            <span class="nav-icon">🎟️</span>
+            <span>预约</span>
+        </button>
+        <button onclick="renderView('tips')" class="nav-item" id="nav-tips">
+            <span class="nav-icon">💡</span>
+            <span>贴士</span>
+        </button>
+    </nav>
+
+    <script>
+        // --- 数据源 (整合了所有细节) ---
+        const packingItems = [
+            "护照 / BRP / 钱包 (重要!)", 
+            "学生卡 (ISIC)", 
+            "充电宝 / 充电器 / 转换插头", 
+            "衣服 / 内裤 / 袜子", 
+            "手套 / 帽子 / 围巾", 
+            "项链 / 皮筋 / 卷发棒", 
+            "护肤品 / 化妆品 / 卸妆", 
+            "洗面奶 / 护发素 / 护手霜", 
+            "感冒药 / 卫生巾 / 湿厕纸", 
+            "雨伞 / 润唇膏", 
+            "牙刷 / 拖鞋 / 浴巾", 
+            "App: Citymapper / Uber Eats"
+        ];
+
+        const tripData = {
+            days: [
+                { id: 'd1', label: '1.7 (周三)', title: '抵达柏林' },
+                { id: 'd2', label: '1.8 (周四)', title: '德累斯顿' },
+                { id: 'd3', label: '1.9 (周五)', title: '柏林/巴黎' },
+                { id: 'd4', label: '1.10 (周六)', title: '巴黎铁塔' },
+                { id: 'd5', label: '1.11 (周日)', title: '卢浮宫' },
+                { id: 'd6', label: '1.12 (周一)', title: '左岸返程' }
+            ],
+            itinerary: {
+                'd1': [
+                    { 
+                        time: '13:55', title: '抵达柏林 (BER)', icon: '✈️',
+                        details: '机场快线 FEX 或 RE7/RB14 直达 Zoologischer Garten 站（约30分钟）。',
+                        tips: '出机场跟着绿色 "S" 或红色 "DB" 标志走。'
+                    },
+                    { 
+                        time: '15:30', title: '入住 NH Berlin', icon: '🏨',
+                        details: 'Hotel NH Berlin Kurfürstendamm。位置极佳，就在 Savignyplatz 旁边，交通方便。',
+                        tips: '办理入住后稍作休息，准备出门逛街。'
+                    },
+                    { 
+                        time: '16:00', title: 'Pop Mart & KaDeWe', icon: '🛍️',
+                        details: '1. **Pop Mart**: Tauentzienstraße 13，步行可达，去抽德国限定 Labubu。<br>2. **KaDeWe**: 柏林最豪华百货，顶楼食品层非常棒。',
+                        tips: '营业时间到 20:00，抓紧时间。'
+                    },
+                    { 
+                        time: '18:30', title: '晚餐: Savignyplatz', icon: '🍽️',
+                        details: '推荐 **Dickes Wirtshaus**：氛围热闹，必点炸猪排 (Schnitzel)。<br>或者 **Kuchi**：如果想吃亚洲融合菜。',
+                        tips: '不用跑远，就在酒店附近。'
+                    }
+                ],
+                'd2': [
+                    { 
+                        time: '08:00', title: '火车去德累斯顿', icon: '🚄', badge: '建议预订',
+                        details: '从 Berlin Hbf 出发，买到 **Dresden Hbf (南站)** 下车。<br>车程约2小时。',
+                        tips: '从南站下车是为了开启“南进北出”的不回头路线。'
+                    },
+                    { 
+                        time: '10:30', title: '绿穹珍宝馆 & 王宫', icon: '💎', badge: '学生优惠',
+                        details: '1. **历史绿穹 (地下一层)**：必看！需预约时段。无玻璃展柜，非常震撼。<br>2. **新绿穹 (二楼)**：看完历史馆直接上楼看绿钻。<br>3. **王宫观景台**：门票包含，爬上去俯瞰全景。',
+                        tips: '记得带学生证！租免费中文讲解器。'
+                    },
+                    { 
+                        time: '13:30', title: '巧克力冰棍 & 茨温格宫', icon: '🍦',
+                        details: '在王宫门口买 **Camondas** 巧克力冰棍 (约€4.5)，口感绵密。茨温格宫 (Zwinger) 在外部平台拍照即可。',
+                    },
+                    { 
+                        time: '15:00', title: '午餐: 教堂前吃猪肘', icon: '🍖',
+                        details: '餐厅：**Augustiner an der Frauenkirche**。<br>就在圣母教堂门口，推荐点半个猪肘 (Schweinshaxe)，皮脆肉嫩。',
+                        tips: '路过“王子行列”壁画时，记得买冰箱贴，那里便宜。'
+                    },
+                    { 
+                        time: '16:30', title: '布吕尔平台 & 北站返程', icon: '🚶',
+                        details: '1. 在“欧洲阳台”布吕尔平台看易北河日落。<br>2. 步行过 **Augustusbrücke** 桥。<br>3. 穿过新城 (Neustadt) 走到 **Dresden-Neustadt 车站**。',
+                        tips: '买回程票选 Neustadt 出发，直接回柏林，不走回头路。'
+                    }
+                ],
+                'd3': [
+                    { 
+                        time: '10:00', title: '哈克庭院 & 画廊', icon: '📷', badge: '出片',
+                        details: '1. **Hackesche Höfe**: 逛逛迷人的连环庭院。<br>2. **James Simon Gallery**: 博物馆岛上的白色长廊，极简风大片机位。',
+                        tips: '博物馆岛周五开放，学生票有优惠。'
+                    },
+                    { 
+                        time: '12:30', title: 'HARIBO & 午餐', icon: '🧸',
+                        details: '午餐在 Mall of Berlin 解决。旁边就是 HARIBO 旗舰店，买柏林熊软糖。地下有 dm 超市可以补货。',
+                    },
+                    { 
+                        time: '14:30', title: '奥伯鲍姆桥', icon: '🌉',
+                        details: 'Oberbaumbrücke：红砖双层桥，等待黄色 U1 地铁穿过的瞬间，是柏林最经典的镜头。',
+                    },
+                    { 
+                        time: '20:20', title: '飞往巴黎 (奥利)', icon: '✈️', badge: '必约',
+                        details: '航班抵达 **Orly (ORY)** 机场。<br>这是好消息！离你们住的15区非常近。',
+                        tips: '预留2.5小时安检。'
+                    },
+                    { 
+                        time: '22:10', title: '打车 & 外卖', icon: '🚖',
+                        details: '1. **交通**：强烈建议打车 (Taxi Parisien)，去左岸/15区是**固定费率 €36** (可能有行李费)。<br>2. **外卖**：到酒店点 Uber Eats。推荐 **Napoli Gang** (Pink Mamma同款) 或 **PNY Burger**。',
+                        tips: '不要理会航站楼里拉客的司机，去排正规出租车队。'
+                    }
+                ],
+                'd4': [
+                    { 
+                        time: '10:30', title: '睡懒觉 & 出门', icon: '🛏️',
+                        details: '昨晚太晚，今天睡饱再出发。11点多出门直接去吃午餐。',
+                    },
+                    { 
+                        time: '11:30', title: '午餐: 法式小馆', icon: '🍴',
+                        details: '推荐 **Café Constant** 或 **Les Cocottes**。这一带有很多精致的法式小馆。',
+                    },
+                    { 
+                        time: '13:00', title: '铁塔深度游', icon: '🗼', badge: '青年票',
+                        details: '1. **Trocadéro**: 拍全景。<br>2. **Avenue de Camoëns**: 旁边的死胡同，拍隐秘大片。<br>3. **Bir-Hakeim**: 盗梦空间桥。',
+                        tips: '欧盟学生免票，非欧盟26岁以下有优惠 (Rate Jeunes)。'
+                    },
+                    { 
+                        time: '15:30', title: '香街 & 新老佛爷', icon: '🛍️',
+                        details: '逛香榭丽舍大街。推荐去 **Galeries Lafayette Champs-Élysées**（新店），有光影隧道，非常潮，比奥斯曼总店人少。',
+                    },
+                    { 
+                        time: '18:00', title: '塞纳河游船', icon: '⛴️', badge: '推荐',
+                        details: '傍晚18:00是最佳时间，可以看铁塔整点闪灯。<br>推荐船公司：**Bateaux Mouches** 或 **Bateaux Parisiens**。',
+                        tips: '船上有暖气，不用担心冷。'
+                    },
+                    { 
+                        time: '20:30', title: '晚餐: 牛排薯条', icon: '🥩',
+                        details: '餐厅：**Le Relais de l\'Entrecôte**。法式食堂体验，只卖这一道菜，无限续薯条。',
+                        tips: '不可预约，需排队。'
+                    }
+                ],
+                'd5': [
+                    { 
+                        time: '09:30', title: '卢浮宫', icon: '🖼️', badge: '无学生票',
+                        details: '周日正常开放。🎓仅欧盟<26岁免票，非欧盟无优惠。<br>💡 **秘籍**：走 **Carrousel du Louvre** (地下商场) 入口，避开金字塔排队大军。',
+                    },
+                    { 
+                        time: '12:30', title: '午餐: 必吃蜗牛', icon: '🐌', badge: '推荐',
+                        details: '餐厅：**L\'Escargot Montorgueil** (38 Rue Montorgueil)。<br>百年金字招牌。推荐点混合口味拼盘（传统蒜蓉、鹅肝、松露味）。如果不想走远，日韩区的 Sanukiya (乌冬面) 依然是备选.',
+                    },
+                    { 
+                        time: '15:00', title: '蒙马特高地Montmartre', icon: '🎨',
+                        details: '避开圣心堂门口的人群。带同伴去 **Villa Léandre** (英伦风小径) 和 **Rue de l\'Abreuvoir** (粉红餐厅) 拍照。',
+                    },
+                    { 
+                        time: '19:00', title: '晚餐: Pink Mamma', icon: '🍝', badge: '难订',
+                        details: '网红意大利餐厅，必点松露意面。如果没订到，可以提前去现场排队，或者去附近的 Biglove (同集团)。',
+                    }
+                ],
+                'd6': [
+                    { 
+                        time: '10:00', title: '左岸购物：Le Bon Marché', icon: '🛍️',
+                        details: '顶级百货 & 食品馆。比老佛爷人少体验好。必逛 La Grande Épicerie 买伴手礼(黄油/盐之花)。', badge: '' },
+                    { 
+                        time: '13:00', title: '午餐: L\'As du Fallafel', icon: '🥙',
+                        details: '在玛黑区。周一营业！巴黎最好吃的法拉费口袋饼，排队很快。',
+                    },
+                    { 
+                        time: '16:00', title: 'Citypharma 补货', icon: '💊',
+                        details: '周一正常营业。全巴黎最便宜药妆店。买完回酒店拿行李。',
+                    },
+                    { 
+                        time: '17:30', title: '前往机场 (CDG)', icon: '🛫',
+                        details: '预留充足时间坐 RER B 线或打车前往戴高乐机场。',
+                    }
+                ]
+            }
+        };
+
+        const reservations = [
+            { title: '柏林-德累斯顿 火车', date: '1.8', icon: '🚄' },
+            { title: '绿穹珍宝馆 (历史馆)', date: '1.8', icon: '💎', sub: '务必提前预约' },
+            { title: '柏林-巴黎 机票', date: '1.9', icon: '✈️', sub: '20:20 起飞' },
+            { title: '埃菲尔铁塔登顶', date: '1.10', icon: '🗼', sub: '如需登顶请买票' },
+            { title: '卢浮宫门票', date: '1.11', icon: '🖼️', sub: '09:30 入场' },
+            { title: 'Pink Mamma 晚餐', date: '1.11', icon: '🍝', sub: '提前两周抢号' }
+        ];
+
+        const exploreItems = [
+            { type: 'food', name: 'L\'Escargot Montorgueil', city: '巴黎', desc: '百年蜗牛金字招牌', tags: ['蜗牛'] },
+            { type: 'food', name: 'Napoli Gang', city: '巴黎', desc: 'Pink Mamma同款外卖', tags: ['UberEats'] },
+            { type: 'food', name: 'Camondas', city: '德累斯顿', desc: '王宫门口巧克力冰棍', tags: ['甜点'] },
+            { type: 'photo', name: 'James Simon Gallery', city: '柏林', desc: '极简柱廊光影大片', tags: ['出片'] },
+            { type: 'photo', name: 'Oberbaumbrücke', city: '柏林', desc: '红砖桥+黄色地铁', tags: ['经典'] },
+            { type: 'photo', name: 'Avenue de Camoëns', city: '巴黎', desc: '铁塔隐秘机位', tags: ['小众'] }
+        ];
+
+        // --- 核心逻辑 ---
+        let currentView = 'overview';
+        let currentDay = 'd1';
+
+        function renderView(viewName) {
+            currentView = viewName;
+            
+            // 更新底部导航状态
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active');
+                if (el.id === `nav-${viewName}`) el.classList.add('active');
+            });
+
+            const container = document.getElementById('main-container');
+            container.innerHTML = ''; // 清空
+
+            if (viewName === 'overview') {
+                renderOverview(container);
+            } else if (viewName === 'itinerary') {
+                renderItinerary(container);
+            } else if (viewName === 'reservations') {
+                renderReservations(container);
+            } else if (viewName === 'tips') {
+                renderTips(container);
+            }
+            window.scrollTo(0, 0);
+        }
+
+        // --- 渲染：概览 (首页) ---
+        function renderOverview(container) {
+            // 1. 紧急提示卡片
+            const alertCard = document.createElement('div');
+            alertCard.className = 'card p-4 border-l-4 border-amber-400 bg-amber-50';
+            alertCard.innerHTML = `
+                <h3 class="font-bold text-amber-800 mb-3 flex items-center">⚠️ 行前高亮</h3>
+                <ul class="text-sm text-amber-900 space-y-2 list-disc list-inside">
+                    <li><b>保暖预警：</b>帽子、围巾、手套是户外行走必备。</li>
+                    <li><b>周日闭店：</b>1月11日巴黎多数商店闭门，只有玛黑区营业。</li>
+                    <li><b>学生福利：</b>务必携带 <b>学生证(ISIC) + 护照</b>。德国馆多有优惠，巴黎欧盟生全免。</li>
+                    <li><b>机场交通：</b>奥利机场去左岸一口价 €36，认准正规出租。</li>
+                </ul>
+            `;
+            container.appendChild(alertCard);
+
+            // 2. 行程节奏图表
+            const chartCard = document.createElement('div');
+            chartCard.className = 'card p-4';
+            chartCard.innerHTML = `
+                <h3 class="text-sm font-bold text-slate-500 mb-3">行程节奏分布</h3>
+                <div class="chart-container"><canvas id="activityChart"></canvas></div>
+                <p class="text-xs text-center text-slate-400 mt-2">观光与美食并重，节奏适中</p>
+            `;
+            container.appendChild(chartCard);
+
+            // 3. 白昼图表
+            const dayCard = document.createElement('div');
+            dayCard.className = 'card p-4';
+            dayCard.innerHTML = `
+                <h3 class="text-sm font-bold text-slate-500 mb-3">1月白昼警示</h3>
+                <div class="chart-container"><canvas id="daylightChart"></canvas></div>
+                <p class="text-xs text-center text-slate-400 mt-2">16:30即日落，户外拍照请赶早！</p>
+            `;
+            container.appendChild(dayCard);
+
+            // 4. 必备清单
+            const packingCard = document.createElement('div');
+            packingCard.className = 'card p-5';
+            packingCard.innerHTML = `
+                <h3 class="font-bold text-slate-800 mb-4">🧳 必备清单</h3>
+                <div class="grid grid-cols-1 gap-3" id="packing-list-container"></div>
+            `;
+            container.appendChild(packingCard);
+
+            // 填充清单
+            const listContainer = packingCard.querySelector('#packing-list-container');
+            packingItems.forEach(item => {
+                const label = document.createElement('label');
+                label.className = 'flex items-center gap-3 select-none cursor-pointer';
+                label.innerHTML = `
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                    <span class="text-sm text-slate-700">${item}</span>
+                `;
+                listContainer.appendChild(label);
+            });
+
+            // 初始化图表
+            initCharts();
+        }
+
+        function renderItinerary(container) {
+            // 渲染顶部天数栏
+            const tabsContainer = document.createElement('div');
+            tabsContainer.className = 'day-tabs hide-scroll';
+            
+            tripData.days.forEach(day => {
+                const btn = document.createElement('button');
+                btn.className = `day-tab ${day.id === currentDay ? 'active' : ''}`;
+                btn.textContent = day.label;
+                btn.onclick = () => { currentDay = day.id; renderItinerary(container); };
+                tabsContainer.appendChild(btn);
+            });
+            container.appendChild(tabsContainer);
+
+            // 渲染当天标题
+            const dayInfo = tripData.days.find(d => d.id === currentDay);
+            const header = document.createElement('div');
+            header.className = 'px-4 py-4';
+            header.innerHTML = `<h2 class="text-xl font-bold text-slate-800">${dayInfo.title}</h2><p class="text-xs text-slate-500">点击卡片查看详细攻略 👇</p>`;
+            container.appendChild(header);
+
+            // 渲染列表
+            const list = document.createElement('div');
+            list.className = 'px-4 pb-20';
+            
+            tripData.itinerary[currentDay].forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card group';
+                card.onclick = function() { this.classList.toggle('expanded'); };
+                
+                let badges = '';
+                if (item.badge) {
+                    let colorClass = item.badge.includes('学生') ? 'badge-student' : 'badge-urgent';
+                    badges = `<span class="badge ${colorClass}">${item.badge}</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="flex items-center gap-3">
+                            <span class="timeline-time">${item.time}</span>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-800 text-base flex items-center">
+                                    <span class="mr-2 text-lg">${item.icon}</span> ${item.title}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            ${badges}
+                            <span class="arrow ml-3 text-slate-400 text-xs transition-transform duration-300">▼</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="detail-block">
+                            <span class="detail-label">👀 详细安排</span>
+                            <div class="detail-text">${item.details}</div>
+                        </div>
+                        ${item.tips ? `
+                        <div class="detail-block mt-3 pt-3 border-t border-dashed border-slate-200">
+                            <span class="detail-label text-amber-600">💡 避坑/贴士</span>
+                            <div class="detail-text text-amber-900 bg-amber-50 p-2 rounded">${item.tips}</div>
+                        </div>` : ''}
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+            container.appendChild(list);
+        }
+
+        function renderReservations(container) {
+            const list = [
+                { title: '柏林-德累斯顿 火车', date: '1.8', icon: '🚄' },
+                { title: '绿穹珍宝馆 (历史馆)', date: '1.8', icon: '💎', sub: '务必提前预约时段' },
+                { title: '柏林-巴黎 机票', date: '1.9', icon: '✈️', sub: '20:20 起飞' },
+                { title: '埃菲尔铁塔登顶', date: '1.10', icon: '🗼', sub: '如需登顶请买票' },
+                { title: '卢浮宫门票', date: '1.11', icon: '🖼️', sub: '必约！无学生优惠' },
+                { title: 'Pink Mamma 晚餐', date: '1.11', icon: '🍝', sub: '提前两周抢号' }
+            ];
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'p-4 space-y-3';
+            
+            list.forEach(item => {
+                wrapper.innerHTML += `
+                    <label class="card p-4 flex items-start gap-3 cursor-pointer select-none">
+                        <input type="checkbox" class="w-5 h-5 mt-1 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <div>
+                            <div class="font-bold text-slate-800">${item.icon} ${item.title}</div>
+                            <div class="text-xs text-slate-500 font-bold mt-1">${item.date} ${item.sub ? ` • ${item.sub}` : ''}</div>
+                        </div>
+                    </label>
+                `;
+            });
+            container.appendChild(wrapper);
+        }
+
+        function renderTips(container) {
+            const tips = [
+                { t: '学生证福利', c: '随身带 ISIC + 护照。德国馆多优惠；巴黎欧盟生全免，非欧盟生看运气（凯旋门/铁塔可能有青年票）。' },
+                { t: '奥利机场打车', c: '去左岸(15区)是一口价 €36。认准官方出租车队 Taxi Parisien，不要理拉客的。' },
+                { t: '退税提醒', c: '在德国买的在最后离境国(法国)退。如果坐火车去巴黎，通常不退。建议最后在 CDG 机场统一办理。' },
+                { t: '周日闭店', c: '1月11日周日，巴黎大商场开，但药妆店/小店关门。玛黑区是周日逛街首选。' },
+                { t: '巴黎安全', c: '在铁塔下、地铁里看好包。不要理会给你系红绳、让你签名的陌生人。' }
+            ];
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'p-4 space-y-4';
+            
+            tips.forEach(item => {
+                wrapper.innerHTML += `
+                    <div class="card p-5 border-l-4 border-blue-500">
+                        <h3 class="font-bold text-slate-800 mb-2">${item.t}</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">${item.c}</p>
+                    </div>
+                `;
+            });
+            container.appendChild(wrapper);
+        }
+
+        function initCharts() {
+            setTimeout(() => {
+                const actCtx = document.getElementById('activityChart');
+                const dayCtx = document.getElementById('daylightChart');
+                
+                if(actCtx) {
+                    new Chart(actCtx, {
+                        type: 'doughnut',
+                        data: { labels: ['观光','美食','交通','购物'], datasets: [{ data: [45,25,20,10], backgroundColor: ['#6366f1','#f97316','#94a3b8','#ec4899'], borderWidth:0 }] },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10 } } } }
+                    });
+                }
+                if(dayCtx) {
+                    new Chart(dayCtx, {
+                        type: 'bar',
+                        data: { labels: ['8','10','12','14','16','18','20'], datasets: [{ label: '亮度', data: [20,100,100,100,40,0,0], backgroundColor: c => c.raw>50?'#f59e0b':'#1e293b', borderRadius:4 }] },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
+                    });
+                }
+            }, 100);
+        }
+
+        // 初始化显示概览页
+        renderView('overview');
+
+    </script>
+</body>
+</html>
